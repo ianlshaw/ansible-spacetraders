@@ -1,0 +1,95 @@
+- name: Prepare elk 
+  hosts: elk
+  tasks:
+  - name: Ping my hosts
+    ansible.builtin.ping:
+  
+  - name: Add Elasticsearch apt key
+    become: true
+    apt_key:
+      url: "https://packages.elastic.co/GPG-KEY-elasticsearch"
+      state: present
+
+  - name: install apt-transport-https
+    become: true
+    ansible.builtin.apt:
+      name: apt-transport-https
+
+  - name: add elastcsearch apt source
+    become: true
+    ansible.builtin.apt_repository:
+      repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
+      state: present
+    
+  - name: install elasticsearch
+    become: true
+    ansible.builtin.apt:
+      name: elasticsearch
+
+  - name: write elasticsearch config file from template
+    become: true
+    ansible.builtin.template:
+      src: roles/common/templates/elasticsearch.yml.j2
+      dest: /etc/elasticsearch/elasticsearch.yml
+      owner: root
+      group: root
+      mode: '0444'
+
+  - name: install default-jre
+    become: true
+    ansible.builtin.apt:
+      name: default-jre
+
+  - name: install logstash
+    become: true
+    ansible.builtin.apt:
+      name: logstash
+
+  - name: install kibana
+    become: true
+    ansible.builtin.apt:
+      name: kibana
+
+  - name: write kibana config file from template
+    become: true
+    ansible.builtin.template:
+      src: roles/common/templates/kibana.yml.j2
+      dest: /etc/kibana/kibana.yml
+      owner: root
+      group: root
+      mode: '0444'
+
+  - name: install metricbeat
+    become: true
+    ansible.builtin.apt:
+      name: metricbeat
+
+  - name: start elasticsearch service
+    become: true
+    ansible.builtin.systemd_service:
+      name: elasticsearch
+      state: restarted
+      enabled: true
+      daemon_reload: true
+
+  - name: start kibana service
+    become: true
+    ansible.builtin.systemd_service:
+      name: kibana
+      state: restarted
+      enabled: true
+      daemon_reload: true
+
+  - name: start metricbeat service
+    become: true
+    ansible.builtin.systemd_service:
+      name: metricbeat
+      state: started
+      enabled: true
+
+  - name: start logstash service
+    become: true
+    ansible.builtin.systemd_service:
+      name: logstash
+      state: started
+      enabled: true
