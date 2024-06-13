@@ -2,17 +2,10 @@
   hosts: all
   tasks:
 
-
-
-  - name: configure artifact registry authentication
-    become_user: localtrader
-    ansible.builtin.shell:
-        cmd: printf "Y" | gcloud auth configure-docker europe-north1-docker.pkg.dev
-
   - name: pull manually
     become_user: localtrader
     ansible.builtin.shell:
-      cmd: docker pull europe-north1-docker.pkg.dev/spacetraders-424214/localtrader/localtraderpy:staging
+      cmd: "docker pull europe-north1-docker.pkg.dev/spacetraders-424214/localtrader/localtraderpy:{{environment_name}}"
 
   - name: write docker compose file
     become_user: localtrader

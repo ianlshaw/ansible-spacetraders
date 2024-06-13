@@ -1,1 +1,2 @@
+environment_name: production
 jenkins_deploy_public_key: roles/common/files/ansible-to-production.key.pub

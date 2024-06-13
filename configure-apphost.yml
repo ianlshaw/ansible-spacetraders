@@ -3,18 +3,7 @@
   become: true
   tasks:
 
-    - name:
-      ansible.builtin.user:
-        name: localtrader
-        group: localtrader
-        groups: docker
-        append: true
 
-    - name: Set authorized key taken from file
-      ansible.posix.authorized_key:
-        user: localtrader
-        state: present
-        key: "{{ lookup('file', jenkins_deploy_public_key) }}"
 
     - name: Install aptitude
       apt:
@@ -61,6 +50,29 @@
       pip:
         name: docker
 
-    - name: configure artifact registry authentication
-      ansible.builtin.shell:
-        cmd: printf "Y" | gcloud auth configure-docker europe-north1-docker.pkg.dev
+    - name: create localtrader user
+      ansible.builtin.user:
+        name: localtrader
+        groups: docker
+        append: true
+
+    - name: Set authorized key taken from file
+      ansible.posix.authorized_key:
+        user: localtrader
+        state: present
+        key: "{{ lookup('file', jenkins_deploy_public_key) }}"
+
+    - name: create .docker directory for localtrader user
+      ansible.builtin.file:
+        path: /home/localtrader/.docker
+        state: directory
+        owner: localtrader
+        group: localtrader
+
+    - name: write docker config.json file
+      ansible.builtin.template:
+        src: roles/common/templates/docker.config.json.j2
+        dest: /home/localtrader/.docker/config.json
+        owner: localtrader
+        group: localtrader
+        mode: '0444'

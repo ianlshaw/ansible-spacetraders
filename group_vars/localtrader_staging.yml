@@ -1,1 +1,2 @@
+environment_name: staging
 jenkins_deploy_public_key: roles/common/files/ansible-to-staging.key.pub

@@ -1,5 +1,5 @@
 services:
   localtrader:
-    image: "europe-north1-docker.pkg.dev/spacetraders-424214/localtrader/localtraderpy:staging"
+    image: "europe-north1-docker.pkg.dev/spacetraders-424214/localtrader/localtraderpy:{{ environment_name }}"
     ports: 
       - "80:5000"
