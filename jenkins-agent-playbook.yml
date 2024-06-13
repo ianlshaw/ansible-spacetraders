@@ -8,9 +8,10 @@
       state: present
       key: "{{ lookup('file', 'roles/common/files/jenkins-agent.key.pub') }}"
 
-  - name: Install java
+  - name: Install packages
     apt:
       pkg:
         - default-jre
+        - ansible
       state: latest
       update_cache: true
