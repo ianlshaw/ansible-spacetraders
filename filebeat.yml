@@ -1,0 +1,41 @@
+- name: Prepare test environment
+  hosts: all
+  tasks:
+
+  - name: Add Elasticsearch apt key
+    become: true
+    apt_key:
+      url: "https://packages.elastic.co/GPG-KEY-elasticsearch"
+      state: present
+
+  - name: install apt-transport-https
+    become: true
+    ansible.builtin.apt:
+      name: apt-transport-https
+
+  - name: add elastcsearch apt source
+    become: true
+    ansible.builtin.apt_repository:
+      repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
+      state: present
+
+  - name: install filebeat
+    become: true
+    ansible.builtin.apt:
+      name: filebeat
+
+  - name: write filebeat config file
+    become: true
+    ansible.builtin.template:
+      src: roles/common/templates/filebeat.yml.j2
+      dest: /etc/filebeat/filebeat.yml
+      owner: root
+      group: root
+      mode: '0444'
+
+  - name: Restart filebeat service
+    become: true
+    ansible.builtin.systemd_service:
+      state: restarted
+      daemon_reload: true
+      name: filebeat

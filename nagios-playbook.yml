@@ -1,0 +1,41 @@
+- name: Prepare nagiosk 
+  hosts: nagios
+  tasks:
+  - name: Ping my hosts
+    ansible.builtin.ping:
+
+  - name: install nagios4
+    become: true
+    ansible.builtin.apt:
+      name: nagios4
+
+  - name: install nagios4-common
+    become: true
+    ansible.builtin.apt:
+      name: nagios4-common
+
+  - name: install monitoring-plugins-contrib
+    become: true
+    ansible.builtin.apt:
+      name: monitoring-plugins-contrib
+
+  - name: install nagios-nrpe-plugin
+    become: true
+    ansible.builtin.apt:
+      name: nagios-nrpe-plugin
+
+  - name: start nagios4 service
+    become: true
+    ansible.builtin.systemd_service:
+      name: nagios4
+      state: restarted
+      enabled: true
+      daemon_reload: true
+
+  - name: start apache2 service
+    become: true
+    ansible.builtin.systemd_service:
+      name: apache2
+      state: restarted
+      enabled: true
+      daemon_reload: true

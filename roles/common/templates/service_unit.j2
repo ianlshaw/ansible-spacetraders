@@ -1,0 +1,14 @@
+[Unit]
+Description=Spacetraders api mining fleet as a service
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+WorkingDirectory=/home/ian/cppspacetrading
+Type=simple
+Restart=always
+RestartSec=1
+User=ian
+ExecStart=/home/ian/cppspacetrading/miningfleet {{ callsign }} {{ faction }}
+
+[Install]
+WantedBy=multi-user.target

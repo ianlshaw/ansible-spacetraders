@@ -1,0 +1,46 @@
+- name: Prepare test environment
+  hosts: all
+  tasks:
+  - name: Ping my hosts
+    ansible.builtin.ping:
+
+  - name: Install git
+    become: true
+    ansible.builtin.apt:
+      name: git
+
+  - name: Install build-essential
+    become: true
+    ansible.builtin.apt:
+      name: build-essential
+
+  - name: Install libcurl4-openssl-dev
+    become: true
+    ansible.builtin.apt:
+      name: libcurl4-openssl-dev
+
+  - name: Git checkout
+    ansible.builtin.git:
+      repo: 'https://github.com/ianlshaw/cppspacetrading.git'
+      dest: cppspacetrading
+
+  - name: write service unit file
+    become: true
+    ansible.builtin.template:
+      src: roles/common/templates/service_unit.j2
+      dest: /etc/systemd/system/miningfleet.service
+      owner: root
+      group: root
+      mode: '0444'
+  
+  - name: compile
+    shell:
+      chdir: cppspacetrading
+      cmd: g++ -std=c++17 -g miningfleet.cpp -o miningfleet -lcurl
+
+  - name: Restart service miningfleet in all cases, also issue daemon-reload to pick up config changes
+    become: true
+    ansible.builtin.systemd_service:
+      state: restarted
+      daemon_reload: true
+      name: miningfleet
